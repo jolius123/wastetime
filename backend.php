@@ -1,11 +1,9 @@
 <?php
 header('Content-Type: application/json; charset=utf-8');
-
-
 $host = 'localhost';
-$db = 'waste_mgmt';
 $user = 'root';
 $pass = ''; 
+$db = 'waste_mgmt';
 
 
 $dsn = "mysql:host=$host;dbname=$db;charset=utf8mb4";
@@ -61,4 +59,5 @@ $stmt = $pdo->prepare("UPDATE requests SET status='Completed' WHERE id = :id");
 $stmt->execute([':id' => $id]);
 echo json_encode(['success' => true, 'message' => 'Request marked completed']);
 exit;
+
 ?>
