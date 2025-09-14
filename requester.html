@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,6 +10,7 @@
   <div class="container py-5">
     <h2 class="text-center mb-4">♻ Requester Dashboard</h2>
 
+    <!-- Create Request Form -->
     <div class="card mb-4 shadow-sm">
       <div class="card-header bg-success text-white">Create Request</div>
       <div class="card-body">
@@ -32,11 +32,17 @@
             <label class="form-label">Location</label>
             <input type="text" id="location" class="form-control" required>
           </div>
+          <!-- ✅ Added description -->
+          <div class="mb-3">
+            <label class="form-label">Description</label>
+            <textarea id="description" class="form-control" rows="3" placeholder="Write details about your waste..." required></textarea>
+          </div>
           <button class="btn btn-success w-100" type="submit">Send Request</button>
         </form>
       </div>
     </div>
 
+    <!-- Request List -->
     <div class="card shadow-sm">
       <div class="card-header bg-primary text-white">My Requests</div>
       <div class="card-body" id="requestsList">
@@ -47,7 +53,7 @@
   </div>
 
   <script>
-  const API = 'backend.php';
+  const API = 'server.php';
 
   const form = document.getElementById('requestForm');
   const requestsList = document.getElementById('requestsList');
@@ -59,6 +65,7 @@
     fd.append('user', document.getElementById('user').value.trim());
     fd.append('wasteType', document.getElementById('wasteType').value);
     fd.append('location', document.getElementById('location').value.trim());
+    fd.append('description', document.getElementById('description').value.trim()); // ✅ send description
 
     try {
       const res = await fetch(API, { method: 'POST', body: fd });
@@ -77,7 +84,6 @@
 
   async function loadMyRequests() {
     const name = document.getElementById('user').value.trim();
-    // If user field empty, just show all
     const url = name ? `${API}?role=requester&user=${encodeURIComponent(name)}` : API;
     const res = await fetch(url);
     const data = await res.json();
@@ -92,10 +98,15 @@
       card.className = 'card mb-3 shadow-sm';
       card.innerHTML = `
         <div class="card-body">
-          <h5 class="card-title">Request #${r.id} - <span class="badge ${r.status === 'Pending' ? 'bg-warning' : r.status === 'Cancelled' ? 'bg-danger' : 'bg-success'}">${r.status}</span></h5>
+          <h5 class="card-title">Request #${r.id} - 
+            <span class="badge ${r.status === 'Pending' ? 'bg-warning' : r.status === 'Cancelled' ? 'bg-danger' : 'bg-success'}">
+              ${r.status}
+            </span>
+          </h5>
           <p class="card-text"><b>User:</b> ${r.user_name}</p>
           <p class="card-text"><b>Waste Type:</b> ${r.waste_type}</p>
           <p class="card-text"><b>Location:</b> ${r.location}</p>
+          <p class="card-text"><b>Description:</b> ${r.description || '(none)'}</p> <!-- ✅ show description -->
           <p class="card-text"><small class="text-muted">Created At: ${r.created_at}</small></p>
         </div>`;
 
@@ -124,25 +135,8 @@
       alert(json.error || 'Error cancelling');
     }
   }
-    form.addEventListener('submit', function(e) {
-  e.preventDefault();
-  const json = {
-    user: document.getElementById('user').value.trim(),
-    wasteType: document.getElementById('wasteType').value,
-    location: document.getElementById('location').value.trim()
-  };
-  console.log(JSON.stringify(json, null, 2));
-  
-});
 
-  
   loadMyRequests();
   </script>
 </body>
 </html>
-
-
-
-
-
-
